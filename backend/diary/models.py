@@ -35,3 +35,19 @@ class DiaryEntry(models.Model):
 
     def __str__(self):
         return self.title
+    
+class DiaryImage(models.Model):
+    diary_entry = models.ForeignKey(
+        DiaryEntry,
+        on_delete=models.CASCADE,
+        related_name='images'
+    )
+
+    image = models.ImageField(
+        upload_to='diary_images/'
+    )
+
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'Image for {self.diary_entry.title}'
