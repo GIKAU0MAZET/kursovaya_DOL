@@ -6,6 +6,7 @@ import EventCard from "../../components/schedule/EventCard";
 
 import { scheduleService } from "../../services/schedule.service";
 
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Event } from "../../types/schedule.types";
 
 export default function ScheduleScreen() {
@@ -44,14 +45,16 @@ export default function ScheduleScreen() {
   }
 
   return (
-    <FlatList
-      data={events}
-      keyExtractor={(item) => item.id.toString()}
-      contentContainerStyle={{
-        padding: 16,
-        gap: 12,
-      }}
-      renderItem={({ item }) => <EventCard event={item} />}
-    />
+    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+      <FlatList
+        data={events}
+        keyExtractor={(item) => item.id.toString()}
+        contentContainerStyle={{
+          padding: 16,
+          gap: 12,
+        }}
+        renderItem={({ item }) => <EventCard event={item} />}
+      />
+    </SafeAreaView>
   );
 }

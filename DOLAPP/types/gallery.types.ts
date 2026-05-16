@@ -5,4 +5,6 @@ export type Gallery = {
   child: number | null;
   group: number | null;
   created_at: string;
+  event_date: string;
+  type?: "event" | "squad" | "corps";
 };

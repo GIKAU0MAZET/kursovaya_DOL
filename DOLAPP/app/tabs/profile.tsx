@@ -6,7 +6,13 @@ export default function Profile() {
   const user = useAuthStore((s) => s.user);
 
   return (
-    <View>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <Text>{user?.username}</Text>
       <Text>{user?.email}</Text>
       <Button title="Logout" onPress={logout} />

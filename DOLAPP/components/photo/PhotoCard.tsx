@@ -1,5 +1,5 @@
 import { Gallery } from "@/types/gallery.types";
-import { Image, Text, View } from "react-native";
+import { Image, View } from "react-native";
 
 type Props = {
   photo: Gallery;
@@ -7,27 +7,16 @@ type Props = {
 
 export default function PhotoCard({ photo }: Props) {
   return (
-    <View
-      style={{
-        backgroundColor: "white",
-        padding: 20,
-        borderRadius: 20,
-        gap: 10,
-      }}
-    >
+    <View style={{ flex: 1, aspectRatio: 1, margin: 4 }}>
       <Image
         source={{ uri: photo.image }}
         style={{
           width: "100%",
-          height: 200,
+          height: "100%",
           borderRadius: 12,
         }}
         resizeMode="cover"
       />
-
-      {photo.caption ? (
-        <Text style={{ fontSize: 14 }}>{photo.caption}</Text>
-      ) : null}
     </View>
   );
 }
