@@ -1,10 +1,19 @@
 from django.db import models
+from group.models import Group
 
 
 class Event(models.Model):
     title = models.CharField(max_length=255)
 
     description = models.TextField(
+        blank=True
+    )
+    
+    group = models.ForeignKey(
+        Group,
+        on_delete=models.CASCADE,
+        related_name='events',
+        null=True,
         blank=True
     )
 

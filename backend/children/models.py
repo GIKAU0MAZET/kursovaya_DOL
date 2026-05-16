@@ -1,5 +1,6 @@
 from django.db import models
 from users.models import User
+from group.models import Group
 
 
 class Child(models.Model):
@@ -24,7 +25,13 @@ class Child(models.Model):
         choices=GENDER_CHOICES
     )
 
-    group_name = models.CharField(max_length=100)
+    group = models.ForeignKey(
+        Group,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='children'
+    )
 
     allergies = models.TextField(blank=True)
     medical_notes = models.TextField(blank=True)

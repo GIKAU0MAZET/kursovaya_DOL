@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'chat',
     'gallery',
     'schedule',
+    'group',
 ]
 
 MIDDLEWARE = [
