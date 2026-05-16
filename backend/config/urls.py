@@ -9,7 +9,7 @@ urlpatterns = [
     path('api/children/', include('children.urls')),
     path('api/diary/', include('diary.urls')),
     path('api/schedule/', include('schedule.urls')),
-    path('api/gallery', include('gallery.urls'))
+    path('api/gallery/', include('gallery.urls'))
 ]
 
 urlpatterns += static(
