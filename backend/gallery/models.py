@@ -14,6 +14,17 @@ class GalleryImage(models.Model):
         max_length=255,
         blank=True
     )
+    
+    class PhotoType(models.TextChoices):
+        EVENT = "event"
+        SQUAD = "squad"
+        PERSONAL = "personal"
+
+    type = models.CharField(
+        max_length=20,
+        choices=PhotoType.choices,
+        default=PhotoType.PERSONAL
+    )
 
     uploaded_by = models.ForeignKey(
         User,
@@ -33,6 +44,8 @@ class GalleryImage(models.Model):
         null=True,
         blank=True
     )
+    
+    event_date = models.DateField(null=True);
 
     created_at = models.DateTimeField(
         auto_now_add=True
