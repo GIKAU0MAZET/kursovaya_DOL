@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { ScrollView, Text, View } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 import ChildCard from "../../components/home/ChildCard";
 import EventCard from "../../components/home/EventCard";
@@ -8,6 +9,7 @@ import EventCard from "../../components/home/EventCard";
 import { childrenService } from "../../services/children.service";
 import { scheduleService } from "../../services/schedule.service";
 
+import { COLORS } from "@/constants/colors";
 import { Child } from "../../types/children.types";
 import { Event } from "../../types/schedule.types";
 
@@ -53,72 +55,79 @@ export default function Home() {
   }
 
   return (
-    <ScrollView
-      contentContainerStyle={{
-        padding: 16,
-        gap: 20,
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: COLORS.card,
       }}
     >
-      {/* HEADER */}
-      <View>
-        <Text
-          style={{
-            fontSize: 28,
-            fontWeight: "700",
-          }}
-        >
-          Главная
-        </Text>
-
-        <Text
-          style={{
-            color: "#666",
-            marginTop: 4,
-          }}
-        >
-          Добро пожаловать 👋
-        </Text>
-      </View>
-
-      {/* CHILDREN */}
-      <View
-        style={{
-          gap: 12,
+      <ScrollView
+        contentContainerStyle={{
+          padding: 16,
+          gap: 20,
         }}
       >
-        <Text
+        {/* HEADER */}
+        <View>
+          <Text
+            style={{
+              fontSize: 28,
+              fontWeight: "700",
+            }}
+          >
+            Главная
+          </Text>
+
+          <Text
+            style={{
+              color: "#666",
+              marginTop: 4,
+            }}
+          >
+            Добро пожаловать 👋
+          </Text>
+        </View>
+
+        {/* CHILDREN */}
+        <View
           style={{
-            fontSize: 22,
-            fontWeight: "700",
+            gap: 12,
           }}
         >
-          Дети
-        </Text>
+          <Text
+            style={{
+              fontSize: 22,
+              fontWeight: "700",
+            }}
+          >
+            Дети
+          </Text>
 
-        {children.map((child) => (
-          <ChildCard key={child.id} child={child} />
-        ))}
-      </View>
+          {children.map((child) => (
+            <ChildCard key={child.id} child={child} />
+          ))}
+        </View>
 
-      {/* EVENTS */}
-      <View
-        style={{
-          gap: 12,
-        }}
-      >
-        <Text
+        {/* EVENTS */}
+        <View
           style={{
-            fontSize: 22,
-            fontWeight: "700",
+            gap: 12,
           }}
         >
-          Ближайшие события
-        </Text>
+          <Text
+            style={{
+              fontSize: 22,
+              fontWeight: "700",
+            }}
+          >
+            Ближайшие события
+          </Text>
 
-        {events.slice(0, 3).map((event) => (
-          <EventCard key={event.id} event={event} />
-        ))}
-      </View>
-    </ScrollView>
+          {events.slice(0, 3).map((event) => (
+            <EventCard key={event.id} event={event} />
+          ))}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 }
