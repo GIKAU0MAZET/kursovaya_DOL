@@ -8,7 +8,7 @@ export default function Profile() {
   return (
     <View>
       <Text>{user?.username}</Text>
-      {/* <Text>{user?.email}</Text> */}
+      <Text>{user?.email}</Text>
       <Button title="Logout" onPress={logout} />
     </View>
   );

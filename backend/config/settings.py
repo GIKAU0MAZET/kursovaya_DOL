@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'health',
     'chat',
     'gallery',
+    'schedule',
 ]
 
 MIDDLEWARE = [

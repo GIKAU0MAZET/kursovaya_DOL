@@ -5,7 +5,7 @@ import { tokenService } from "../services/token.service";
 type User = {
   id?: string;
   username?: string;
-  //   email?: string;
+  email?: string;
 };
 
 type AuthState = {

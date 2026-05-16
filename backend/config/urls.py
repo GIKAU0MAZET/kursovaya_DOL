@@ -8,6 +8,7 @@ urlpatterns = [
     path('api/auth/', include('users.urls')),
     path('api/children/', include('children.urls')),
     path('api/diary/', include('diary.urls')),
+    path('api/schedule/', include('schedule.urls')),
     
 ]
 
