@@ -9,7 +9,7 @@ export type Child = {
 
   group: number | null;
 
-  group_name?: string;
+  group_name: string;
 
   parent: number;
 

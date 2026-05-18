@@ -1,24 +1,19 @@
 import { useEffect, useState } from "react";
-
 import { ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
 
-import ChildCard from "../../components/home/ChildCard";
-import EventCard from "../../components/home/EventCard";
+import ChildHeroCard from "@/components/home/ChildCard";
+import HomeHeader from "@/components/home/HomeHeader";
 
-import { childrenService } from "../../services/children.service";
-import { scheduleService } from "../../services/schedule.service";
+import { childrenService } from "@/services/children.service";
+import { scheduleService } from "@/services/schedule.service";
 
-import { COLORS } from "@/constants/colors";
-import { Child } from "../../types/children.types";
-import { Event } from "../../types/schedule.types";
+import TodayTimeline from "@/components/home/EventCard";
+import { Child } from "@/types/children.types";
+import { Event } from "@/types/schedule.types";
 
-export default function Home() {
+export default function HomeScreen() {
   const [children, setChildren] = useState<Child[]>([]);
-
   const [events, setEvents] = useState<Event[]>([]);
-
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     loadData();
@@ -33,101 +28,110 @@ export default function Home() {
       setChildren(childrenData);
 
       setEvents(eventsData);
-    } catch (error) {
-      console.log(error);
-    } finally {
-      setLoading(false);
+    } catch (e) {
+      console.log(e);
     }
   };
 
-  if (loading) {
-    return (
-      <View
-        style={{
-          flex: 1,
-          justifyContent: "center",
-          alignItems: "center",
-        }}
-      >
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
+  const child = children[0];
 
   return (
-    <SafeAreaView
+    <ScrollView
       style={{
         flex: 1,
-        backgroundColor: COLORS.card,
+        backgroundColor: "#F5F5F5",
       }}
+      contentContainerStyle={{
+        padding: 16,
+        paddingBottom: 40,
+        gap: 20,
+      }}
+      showsVerticalScrollIndicator={false}
     >
-      <ScrollView
-        contentContainerStyle={{
-          padding: 16,
-          gap: 20,
+      <HomeHeader />
+
+      {child && <ChildHeroCard child={child} />}
+
+      <View
+        style={{
+          gap: 12,
         }}
       >
-        {/* HEADER */}
-        <View>
-          <Text
-            style={{
-              fontSize: 28,
-              fontWeight: "700",
-            }}
-          >
-            Главная
-          </Text>
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "700",
+          }}
+        >
+          Сегодня, 16 мая
+        </Text>
 
+        <TodayTimeline events={events.slice(0, 5)} />
+      </View>
+
+      {/* NEWS */}
+      <View
+        style={{
+          gap: 12,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "700",
+          }}
+        >
+          Последние новости
+        </Text>
+
+        <View
+          style={{
+            backgroundColor: "white",
+            padding: 20,
+            borderRadius: 20,
+          }}
+        >
           <Text
             style={{
               color: "#666",
-              marginTop: 4,
             }}
           >
-            Добро пожаловать 👋
+            Пока пусто
           </Text>
         </View>
+      </View>
 
-        {/* CHILDREN */}
+      {/* NOTIFICATIONS */}
+      <View
+        style={{
+          gap: 12,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 24,
+            fontWeight: "700",
+          }}
+        >
+          Уведомления
+        </Text>
+
         <View
           style={{
-            gap: 12,
+            backgroundColor: "white",
+            padding: 20,
+            borderRadius: 20,
           }}
         >
           <Text
             style={{
-              fontSize: 22,
-              fontWeight: "700",
+              color: "#666",
             }}
           >
-            Дети
+            Уведомлений нет
           </Text>
-
-          {children.map((child) => (
-            <ChildCard key={child.id} child={child} />
-          ))}
         </View>
-
-        {/* EVENTS */}
-        <View
-          style={{
-            gap: 12,
-          }}
-        >
-          <Text
-            style={{
-              fontSize: 22,
-              fontWeight: "700",
-            }}
-          >
-            Ближайшие события
-          </Text>
-
-          {events.slice(0, 3).map((event) => (
-            <EventCard key={event.id} event={event} />
-          ))}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+      </View>
+    </ScrollView>
   );
 }

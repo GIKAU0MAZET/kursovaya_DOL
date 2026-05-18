@@ -1,72 +1,108 @@
-import { Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
-import { Child } from "../../types/children.types";
+import { COLORS, RADIUS, SHADOWS, SPACING } from "@/constants/theme";
+import { router } from "expo-router";
 
 type Props = {
-  child: Child;
+  child: {
+    id: number;
+    first_name: string;
+    last_name: string;
+    group_name: string;
+    photo?: string;
+    status?: string;
+  };
 };
 
-export default function ChildCard({ child }: Props) {
+export default function ChildHeroCard({ child }: Props) {
   return (
-    <View
+    <Pressable
+      onPress={() =>
+        router.push({
+          pathname: "/children/[id]",
+          params: { id: child.id.toString() },
+        })
+      }
       style={{
-        backgroundColor: "white",
+        backgroundColor: COLORS.primary,
 
-        padding: 20,
+        borderRadius: RADIUS.lg,
 
-        borderRadius: 20,
+        padding: SPACING.lg,
 
-        gap: 6,
-
-        shadowColor: "#000",
-
-        shadowOpacity: 0.1,
-
-        shadowRadius: 6,
-
-        elevation: 3,
+        ...SHADOWS.card,
       }}
     >
       <View
         style={{
-          width: 60,
-          height: 60,
+          flexDirection: "row",
 
-          borderRadius: 30,
-
-          backgroundColor: "#4F46E5",
-
-          justifyContent: "center",
-          alignItems: "center",
+          gap: SPACING.md,
         }}
       >
-        <Text
+        <Image
+          source={{
+            uri: "https://i.pravatar.cc/150",
+          }}
           style={{
-            color: "white",
-            fontSize: 24,
-            fontWeight: "700",
+            width: 80,
+            height: 80,
+            borderRadius: 40,
+          }}
+        />
+
+        <View
+          style={{
+            justifyContent: "center",
+
+            gap: 6,
           }}
         >
-          {child.first_name[0]}
-        </Text>
-      </View>
-      <Text
-        style={{
-          fontSize: 20,
-          fontWeight: "700",
-        }}
-      >
-        {child.first_name} {child.last_name}
-      </Text>
+          <Text
+            style={{
+              color: "white",
 
-      <Text
-        style={{
-          color: "#666",
-          fontSize: 16,
-        }}
-      >
-        {child.group_name}
-      </Text>
-    </View>
+              fontSize: 22,
+
+              fontWeight: "700",
+            }}
+          >
+            {child.first_name} {child.last_name}
+          </Text>
+
+          <Text
+            style={{
+              color: "rgba(255,255,255,0.9)",
+
+              fontSize: 16,
+            }}
+          >
+            {child.group_name}
+          </Text>
+
+          <View
+            style={{
+              backgroundColor: "rgba(255,255,255,0.2)",
+
+              paddingHorizontal: 10,
+
+              paddingVertical: 6,
+
+              borderRadius: 999,
+
+              alignSelf: "flex-start",
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+              }}
+            >
+              В лагере
+            </Text>
+          </View>
+        </View>
+      </View>
+    </Pressable>
   );
 }
