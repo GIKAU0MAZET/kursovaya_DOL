@@ -5,9 +5,10 @@ import PhotoCard from "./PhotoCard";
 type Props = {
   title: string;
   data: Gallery[];
+  onPressPhoto: (photo: Gallery) => void;
 };
 
-export default function PhotoSection({ title, data }: Props) {
+export default function PhotoSection({ title, data, onPressPhoto }: Props) {
   return (
     <View style={{ marginBottom: 24 }}>
       <Text style={{ fontSize: 18, fontWeight: "700", marginBottom: 12 }}>
@@ -19,7 +20,9 @@ export default function PhotoSection({ title, data }: Props) {
         numColumns={3}
         scrollEnabled={false}
         keyExtractor={(item) => item.id.toString()}
-        renderItem={({ item }) => <PhotoCard photo={item} />}
+        renderItem={({ item }) => (
+          <PhotoCard photo={item} onPress={() => onPressPhoto(item)} />
+        )}
       />
     </View>
   );

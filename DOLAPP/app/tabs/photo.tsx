@@ -1,16 +1,26 @@
-import React, { useEffect, useState } from "react";
-import { FlatList, Text, View } from "react-native";
+import { useEffect, useState } from "react";
+import { Alert, FlatList, Text, View } from "react-native";
+
+import * as FileSystem from "expo-file-system/legacy";
+import * as MediaLibrary from "expo-media-library";
 
 import { galleryService } from "@/services/gallery.service";
 import { Gallery } from "@/types/gallery.types";
 import { groupGalleryByDate } from "@/utils/groupGalleryByDate";
 
 import PhotoSection from "@/components/photo/PhotoSection";
+import PhotoViewer from "@/components/photo/PhotoViewer";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function PhotoScreen() {
   const [photos, setPhotos] = useState<Gallery[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const [tab, setTab] = useState("all");
+
+  // 🖼️ viewer state
+  const [viewerIndex, setViewerIndex] = useState(0);
+  const [viewerVisible, setViewerVisible] = useState(false);
 
   const TABS = [
     { label: "Все", value: "all" },
@@ -18,8 +28,6 @@ export default function PhotoScreen() {
     { label: "Отряд", value: "squad" },
     { label: "Личные", value: "personal" },
   ];
-
-  const [tab, setTab] = useState("all");
 
   useEffect(() => {
     loadPhotos();
@@ -41,6 +49,33 @@ export default function PhotoScreen() {
 
   const sections = groupGalleryByDate(filteredPhotos);
 
+  // 📥 download + save
+  const downloadPhoto = async (image: string) => {
+    try {
+      const permission = await MediaLibrary.requestPermissionsAsync();
+      if (!permission.granted) {
+        Alert.alert("Нет доступа к галерее");
+        return;
+      }
+
+      const fileUri = FileSystem.documentDirectory + "photo.jpg";
+
+      const downloaded = await FileSystem.downloadAsync(image, fileUri);
+
+      await MediaLibrary.saveToLibraryAsync(downloaded.uri);
+
+      Alert.alert("Готово", "Фото сохранено в галерею");
+    } catch (e) {
+      Alert.alert("Ошибка", "Не удалось скачать фото");
+    }
+  };
+
+  const openPhoto = (photo: Gallery) => {
+    const index = filteredPhotos.findIndex((p) => p.id === photo.id);
+    setViewerIndex(index);
+    setViewerVisible(true);
+  };
+
   if (loading) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
@@ -50,21 +85,21 @@ export default function PhotoScreen() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+    <SafeAreaView style={{ flex: 1 }}>
       {/* HEADER */}
       <Text
         style={{
           fontSize: 24,
           fontWeight: "800",
           textAlign: "center",
-          marginTop: 8,
+          marginTop: 10,
           marginBottom: 12,
         }}
       >
         Фотогалерея
       </Text>
 
-      {/* TABS (упрощённо) */}
+      {/* TABS */}
       <View
         style={{
           flexDirection: "row",
@@ -93,10 +128,22 @@ export default function PhotoScreen() {
       <FlatList
         data={sections}
         keyExtractor={(item) => item.title}
-        contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 20 }}
+        contentContainerStyle={{ padding: 16, paddingBottom: 40 }}
         renderItem={({ item }) => (
-          <PhotoSection title={item.title} data={item.data} />
+          <PhotoSection
+            title={item.title}
+            data={item.data}
+            onPressPhoto={openPhoto}
+          />
         )}
+      />
+
+      <PhotoViewer
+        visible={viewerVisible}
+        photos={filteredPhotos}
+        index={viewerIndex}
+        setIndex={setViewerIndex}
+        onClose={() => setViewerVisible(false)}
       />
     </SafeAreaView>
   );

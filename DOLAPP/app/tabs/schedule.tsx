@@ -46,6 +46,18 @@ export default function ScheduleScreen() {
 
   return (
     <SafeAreaView style={{ flex: 1 }} edges={["top"]}>
+      {/* HEADER */}
+      <Text
+        style={{
+          fontSize: 24,
+          fontWeight: "800",
+          textAlign: "center",
+          marginTop: 10,
+          marginBottom: 12,
+        }}
+      >
+        Расписание
+      </Text>
       <FlatList
         data={events}
         keyExtractor={(item) => item.id.toString()}

@@ -2,6 +2,7 @@ import { setLogoutHandler } from "@/services/api";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
 import { Text, View } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { useAuthStore } from "../store/auth.store";
 
 export default function RootLayout() {
@@ -50,5 +51,9 @@ export default function RootLayout() {
     );
   }
 
-  return <Stack screenOptions={{ headerShown: false }} />;
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <Stack screenOptions={{ headerShown: false }} />
+    </GestureHandlerRootView>
+  );
 }

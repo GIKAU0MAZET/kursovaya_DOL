@@ -1,13 +1,17 @@
 import { Gallery } from "@/types/gallery.types";
-import { Image, View } from "react-native";
+import { Image, TouchableOpacity } from "react-native";
 
 type Props = {
   photo: Gallery;
+  onPress: () => void;
 };
 
-export default function PhotoCard({ photo }: Props) {
+export default function PhotoCard({ photo, onPress }: Props) {
   return (
-    <View style={{ flex: 1, aspectRatio: 1, margin: 4 }}>
+    <TouchableOpacity
+      onPress={onPress}
+      style={{ flex: 1, aspectRatio: 1, margin: 4 }}
+    >
       <Image
         source={{ uri: photo.image }}
         style={{
@@ -17,6 +21,6 @@ export default function PhotoCard({ photo }: Props) {
         }}
         resizeMode="cover"
       />
-    </View>
+    </TouchableOpacity>
   );
 }
