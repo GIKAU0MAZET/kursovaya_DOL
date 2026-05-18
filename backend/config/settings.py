@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'gallery',
     'schedule',
     'group',
+    'invites',
 ]
 
 MIDDLEWARE = [

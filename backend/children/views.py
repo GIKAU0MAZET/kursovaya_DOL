@@ -10,7 +10,9 @@ class ChildListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Child.objects.filter(parent=self.request.user)
+        return Child.objects.filter(
+    childparentrelation__parent=self.request.user
+    ).distinct()
 
     def perform_create(self, serializer):
         serializer.save(parent=self.request.user)
@@ -20,4 +22,6 @@ class ChildDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        return Child.objects.filter(parent=self.request.user)
+        return Child.objects.filter(
+    childparentrelation__parent=self.request.user
+    ).distinct()
