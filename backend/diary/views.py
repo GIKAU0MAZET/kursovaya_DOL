@@ -28,7 +28,7 @@ class DiaryEntryListCreateView(generics.ListCreateAPIView):
 
         if user.role == 'parent':
             return DiaryEntry.objects.filter(
-                child__parent=user
+                child__parents=user
             )
 
         return DiaryEntry.objects.none()

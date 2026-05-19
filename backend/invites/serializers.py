@@ -45,7 +45,7 @@ class AcceptInviteSerializer(serializers.Serializer):
 
         ChildParentRelation.objects.create(
             child=invite.child,
-            parent=user,
+            parents=user,
             relation_type='guardian'
         )
 

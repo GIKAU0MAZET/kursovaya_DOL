@@ -10,18 +10,25 @@ class ChildListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        user = self.request.user
+        # Только дети, у которых есть использованный инвайт с email текущего пользователя
         return Child.objects.filter(
-    childparentrelation__parent=self.request.user
-    ).distinct()
+            parentinvite__email=user.email,
+            parentinvite__used=True
+        ).distinct()
 
     def perform_create(self, serializer):
-        serializer.save(parent=self.request.user)
-        
+        # Здесь можно оставить создание ребёнка (если нужно)
+        serializer.save()
+
+
 class ChildDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ChildSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        user = self.request.user
         return Child.objects.filter(
-    childparentrelation__parent=self.request.user
-    ).distinct()
+            parentinvite__email=user.email,
+            parentinvite__used=True
+        ).distinct()

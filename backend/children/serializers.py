@@ -19,6 +19,5 @@ class ChildSerializer(serializers.ModelSerializer):
             'birth_date',
             'group',
             'group_name',
-            'parent',
             'created_at',
         ]
