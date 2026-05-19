@@ -42,7 +42,7 @@ export default function ChildHeroCard({ child }: Props) {
       >
         <Image
           source={{
-            uri: "https://i.pravatar.cc/150",
+            uri: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRLArB45jLKb4Tm-erB_-vZG8zpl8JPqXlKhQ&s",
           }}
           style={{
             width: 80,
