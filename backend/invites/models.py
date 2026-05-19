@@ -4,6 +4,7 @@ from django.utils import timezone
 from datetime import timedelta
 
 from children.models import Child
+from users.models import User
 
 
 class ParentInvite(models.Model):
@@ -13,6 +14,14 @@ class ParentInvite(models.Model):
 
     email = models.EmailField(blank=True, null=True)
     phone = models.CharField(max_length=30, blank=True, null=True)
+
+    parent = models.ForeignKey(
+        User,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name="invites"
+    )
 
     created_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField()

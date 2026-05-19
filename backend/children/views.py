@@ -3,6 +3,7 @@ from rest_framework.permissions import IsAuthenticated
 
 from .models import Child
 from .serializers import ChildSerializer
+from .services import get_accessible_children
 
 
 class ChildListCreateView(generics.ListCreateAPIView):
@@ -10,20 +11,10 @@ class ChildListCreateView(generics.ListCreateAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        # Только дети, у которых есть использованный инвайт с email текущего пользователя
-        return Child.objects.filter(
-            parentinvite__email=user.email,
-            parentinvite__used=True
-        ).distinct()
-        
-    def get_serializer_context(self):
-        return {
-            'request': self.request
-        }
+        return get_accessible_children(self.request.user)
 
     def perform_create(self, serializer):
-        # Здесь можно оставить создание ребёнка (если нужно)
+        # обычно детей создаёт staff, поэтому можно оставить без изменений
         serializer.save()
 
 
@@ -32,11 +23,7 @@ class ChildDetailView(generics.RetrieveUpdateDestroyAPIView):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        user = self.request.user
-        return Child.objects.filter(
-            parentinvite__email=user.email,
-            parentinvite__used=True
-        ).distinct()
+        return get_accessible_children(self.request.user)
         
     def get_serializer_context(self):
         return {

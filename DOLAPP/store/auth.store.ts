@@ -1,3 +1,4 @@
+import { UserRole } from "@/types/user.types";
 import { create } from "zustand";
 import { authService } from "../services/auth.service";
 import { tokenService } from "../services/token.service";
@@ -10,6 +11,7 @@ type User = {
 
 type AuthState = {
   user: User | null;
+  role: UserRole | null;
   accessToken: string | null;
   refreshToken: string | null;
   isLoading: boolean;
@@ -27,6 +29,7 @@ type AuthState = {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
+  role: null,
   accessToken: null,
   refreshToken: null,
   isLoading: true,
@@ -37,10 +40,13 @@ export const useAuthStore = create<AuthState>((set) => ({
     const res = await authService.login(email, password);
     const me = await authService.me();
 
+    await tokenService.setTokens(res.access, res.refresh);
+
     set({
       accessToken: res.access,
       refreshToken: res.refresh,
       user: me,
+      role: me.role,
       isAuthenticated: true,
       isLoading: false,
     });
@@ -78,21 +84,21 @@ export const useAuthStore = create<AuthState>((set) => ({
         return;
       }
 
-      // пробуем получить user
       const me = await authService.me();
 
       set({
         accessToken: access,
         refreshToken: refresh,
         user: me,
+        role: me.role,
         isAuthenticated: true,
         isLoading: false,
       });
     } catch (e) {
-      console.log("hydrate error", e);
       await tokenService.clearTokens();
       set({
         user: null,
+        role: null,
         accessToken: null,
         refreshToken: null,
         isAuthenticated: false,
