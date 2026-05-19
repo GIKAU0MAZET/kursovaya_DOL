@@ -16,8 +16,12 @@ export const groupGalleryByDate = (photos: Gallery[]) => {
     grouped[date].push(item);
   });
 
-  return Object.keys(grouped).map((date) => ({
-    title: date,
-    data: grouped[date],
-  }));
+  return Object.entries(grouped)
+    .sort(([dateA], [dateB]) => {
+      return new Date(dateB).getTime() - new Date(dateA).getTime();
+    })
+    .map(([date, data]) => ({
+      title: date,
+      data,
+    }));
 };
