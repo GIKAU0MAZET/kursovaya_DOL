@@ -2,7 +2,7 @@ import { COLORS } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { useAuthStore } from "../../store/auth.store";
+import { useAuthStore } from "../../../store/auth.store";
 
 export default function Profile() {
   const logout = useAuthStore((s) => s.logout);

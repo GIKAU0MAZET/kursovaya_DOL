@@ -1,59 +1,35 @@
-import { setLogoutHandler } from "@/services/api";
+import { useAuthStore } from "@/store/auth.store";
+import { UserRole } from "@/types/user.types";
 import { Stack, useRouter, useSegments } from "expo-router";
 import { useEffect } from "react";
-import { Text, View } from "react-native";
-import { GestureHandlerRootView } from "react-native-gesture-handler";
-import { useAuthStore } from "../store/auth.store";
 
 export default function RootLayout() {
-  const router = useRouter();
+  const { user, isAuthenticated, isLoading } = useAuthStore();
   const segments = useSegments();
+  const router = useRouter();
 
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  const isLoading = useAuthStore((state) => state.isLoading);
-  const hydrateAuth = useAuthStore((state) => state.hydrateAuth);
-  const logout = useAuthStore((s) => s.logout);
+  const roleRoutes: Record<UserRole, any> = {
+    parent: "/parent/tabs",
+    educator: "/educator/tabs",
+    medic: "/medic/tabs",
+  };
 
-  // 🔄 при старте приложения
-  useEffect(() => {
-    hydrateAuth();
-  }, []);
-
-  // 🚪 логика редиректа
   useEffect(() => {
     if (isLoading) return;
 
-    const inAuthGroup = segments[0] === "auth";
+    const inAuth = segments[0] === "auth";
 
-    // если НЕ авторизован → отправляем в login
-    if (!isAuthenticated && !inAuthGroup) {
+    if (!isAuthenticated && !inAuth) {
       router.replace("/auth/login");
       return;
     }
 
-    // если авторизован → отправляем в tabs
-    if (isAuthenticated && inAuthGroup) {
-      router.replace("/tabs");
-      return;
+    if (isAuthenticated && user) {
+      if (segments[0] === "auth") {
+        router.replace(roleRoutes[user.role]);
+      }
     }
-  }, [isAuthenticated, isLoading, segments, router]);
+  }, [isAuthenticated, user, segments]);
 
-  useEffect(() => {
-    setLogoutHandler(logout);
-  }, []);
-
-  // ⏳ загрузка приложения
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
-  return (
-    <GestureHandlerRootView style={{ flex: 1 }}>
-      <Stack screenOptions={{ headerShown: false }} />
-    </GestureHandlerRootView>
-  );
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

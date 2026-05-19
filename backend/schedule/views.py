@@ -85,3 +85,45 @@ class MarkAttendanceView(APIView):
         return Response({
             "detail": "Attendance saved"
         })
+        
+class EventAttendanceView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    # 🔥 получить список детей + их статус
+    def get(self, request, event_id):
+        event = Event.objects.get(id=event_id)
+
+        children = Child.objects.filter(group=event.group)
+
+        result = []
+
+        for child in children:
+            attendance = EventAttendance.objects.filter(
+                event=event,
+                child=child
+            ).first()
+
+            result.append({
+                "child_id": child.id,
+                "name": child.first_name,
+                "status": attendance.status if attendance else None
+            })
+
+        return Response(result)
+
+    # 🔥 поставить/обновить attendance
+    def post(self, request, event_id):
+        child_id = request.data["child_id"]
+        status = request.data["status"]
+
+        attendance, created = EventAttendance.objects.update_or_create(
+            event_id=event_id,
+            child_id=child_id,
+            defaults={"status": status}
+        )
+
+        return Response({
+            "child_id": child_id,
+            "status": attendance.status,
+            "created": created
+        })

@@ -5,10 +5,10 @@ import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 
 import { getLocalDate, normalizeDate } from "@/utils/getLocalDateString";
-import DayTimeline from "../../components/schedule/DayTimeline";
-import { scheduleService } from "../../services/schedule.service";
-import { Event } from "../../types/schedule.types";
-import { getWeekDays } from "../../utils/getWeekDays";
+import DayTimeline from "../../../components/schedule/DayTimeline";
+import { scheduleService } from "../../../services/schedule.service";
+import { Event } from "../../../types/schedule.types";
+import { getWeekDays } from "../../../utils/getWeekDays";
 
 export default function ScheduleScreen() {
   const [events, setEvents] = useState<Event[]>([]);

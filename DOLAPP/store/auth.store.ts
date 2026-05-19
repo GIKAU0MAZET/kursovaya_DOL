@@ -7,11 +7,11 @@ type User = {
   id?: string;
   username?: string;
   email?: string;
+  role: UserRole;
 };
 
 type AuthState = {
   user: User | null;
-  role: UserRole | null;
   accessToken: string | null;
   refreshToken: string | null;
   isLoading: boolean;
@@ -29,7 +29,6 @@ type AuthState = {
 
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
-  role: null,
   accessToken: null,
   refreshToken: null,
   isLoading: true,
@@ -38,15 +37,16 @@ export const useAuthStore = create<AuthState>((set) => ({
   // 🔐 LOGIN
   login: async (email, password) => {
     const res = await authService.login(email, password);
-    const me = await authService.me();
 
     await tokenService.setTokens(res.access, res.refresh);
 
+    const me = await authService.me();
+
+    console.log("ME:", me);
     set({
       accessToken: res.access,
       refreshToken: res.refresh,
       user: me,
-      role: me.role,
       isAuthenticated: true,
       isLoading: false,
     });
@@ -90,7 +90,6 @@ export const useAuthStore = create<AuthState>((set) => ({
         accessToken: access,
         refreshToken: refresh,
         user: me,
-        role: me.role,
         isAuthenticated: true,
         isLoading: false,
       });
@@ -98,7 +97,6 @@ export const useAuthStore = create<AuthState>((set) => ({
       await tokenService.clearTokens();
       set({
         user: null,
-        role: null,
         accessToken: null,
         refreshToken: null,
         isAuthenticated: false,

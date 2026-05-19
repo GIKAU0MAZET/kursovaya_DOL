@@ -14,9 +14,9 @@ export default function Login() {
     }
     try {
       await login(email.trim(), password);
-    } catch (e) {
-      const message = e instanceof Error ? e.message : "Неизвестная ошибка";
-      Alert.alert("Ошибка входа", message);
+    } catch (e: any) {
+      console.log("LOGIN ERROR:", e.response?.data);
+      console.log("STATUS:", e.response?.status);
     }
   };
 
@@ -53,6 +53,12 @@ export default function Login() {
         <Button
           title="secondparent@mail.com"
           onPress={() => login("secondparent@mail.com", "9jVqnsgBDMGpFt5")}
+          color="gray"
+        />
+        <View style={{ height: 8 }} />
+        <Button
+          title="Вожатый"
+          onPress={() => login("educator@mail.ru", "nQPxXR86@5f@nF8")}
           color="gray"
         />
       </View>
