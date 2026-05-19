@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Text, View } from "react-native";
 
 import { Event } from "@/types/schedule.types";
+import { todayDate } from "@/utils/date";
 import { formatTime } from "@/utils/formatTime";
 
 type Props = {
@@ -9,26 +10,17 @@ type Props = {
 };
 
 export default function TodayTimeline({ events }: Props) {
-  const todayDate = new Date().toISOString().split("T")[0];
+  const today = todayDate();
 
-  // события на сегодня
   const todayEvents = useMemo(() => {
-    return events.filter((e) => {
-      const eventDate = e.date?.split("T")[0];
-      return eventDate === todayDate;
-    });
+    return events.filter((e) => e.date === today);
   }, [events]);
 
   // ближайшее событие (после сегодня)
   const nextEvent = useMemo(() => {
     const future = events
-      .filter((e) => {
-        const eventDate = e.date?.split("T")[0];
-        return eventDate > todayDate;
-      })
-      .sort((a, b) => {
-        return new Date(a.date).getTime() - new Date(b.date).getTime();
-      });
+      .filter((e) => e.date > today)
+      .sort((a, b) => a.date.localeCompare(b.date));
 
     return future[0];
   }, [events]);

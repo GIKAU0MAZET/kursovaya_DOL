@@ -12,19 +12,12 @@ export default function EventCard({ event }: Props) {
     <View
       style={{
         backgroundColor: "white",
-
         padding: 16,
-
         borderRadius: 16,
-
         shadowColor: "#000",
-
         shadowOpacity: 0.1,
-
         shadowRadius: 6,
-
         elevation: 3,
-
         gap: 6,
       }}
     >

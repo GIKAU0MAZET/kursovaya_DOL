@@ -4,6 +4,7 @@ import { FlatList, Modal, Pressable, Text, View } from "react-native";
 import { Calendar } from "react-native-calendars";
 import { SafeAreaView } from "react-native-safe-area-context";
 
+import { getLocalDate, normalizeDate } from "@/utils/getLocalDateString";
 import DayTimeline from "../../components/schedule/DayTimeline";
 import { scheduleService } from "../../services/schedule.service";
 import { Event } from "../../types/schedule.types";
@@ -27,7 +28,7 @@ export default function ScheduleScreen() {
       const data = await scheduleService.getEvents();
       setEvents(data);
 
-      const today = new Date().toISOString().split("T")[0];
+      const today = getLocalDate();
       setSelectedDate(today);
     } catch (e) {
       console.log("schedule error:", e);
@@ -40,7 +41,8 @@ export default function ScheduleScreen() {
     const map: Record<string, Event[]> = {};
 
     for (const ev of events) {
-      const date = ev.date.split("T")[0]; // защита от datetime
+      const date = normalizeDate(ev.date);
+
       if (!map[date]) map[date] = [];
       map[date].push(ev);
     }
