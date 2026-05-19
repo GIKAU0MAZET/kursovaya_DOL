@@ -27,13 +27,25 @@ class GalleryListCreateView(generics.ListCreateAPIView):
         elif user.role == 'parent':
             parent_groups = Group.objects.filter(child__parents=user)
             qs = GalleryImage.objects.filter(group__in=parent_groups).distinct()
+        elif user.role == 'educator':
+            qs = GalleryImage.objects.filter(group__educators=user)
         else:
             return GalleryImage.objects.none()
 
         photo_type = self.request.query_params.get("type")
         if photo_type in ("event", "squad", "personal"):
             qs = qs.filter(type=photo_type)
-        return qs
+        return qs.order_by("-event_date", "-id")
 
     def perform_create(self, serializer):
-        serializer.save(uploaded_by=self.request.user)
+        user = self.request.user
+
+        group = Group.objects.filter(educators=user).first()
+
+        print("USER:", user)
+        print("GROUP:", group)
+
+        serializer.save(
+            uploaded_by=user,
+            group=group
+        )
