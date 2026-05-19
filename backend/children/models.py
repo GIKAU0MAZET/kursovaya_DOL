@@ -31,6 +31,12 @@ class Child(models.Model):
 
     created_at = models.DateTimeField(auto_now_add=True)
     
+    photo = models.ImageField(
+        upload_to='children/',
+        null=True,
+        blank=True
+    )
+    
 class ChildParentRelation(models.Model):
     child = models.ForeignKey(Child, on_delete=models.CASCADE)
     parent = models.ForeignKey('users.User', on_delete=models.CASCADE)

@@ -14,4 +14,6 @@ export type Child = {
   parents: number[];
 
   created_at: string;
+
+  photo?: string | null;
 };

@@ -51,6 +51,7 @@ INSTALLED_APPS = [
     'schedule',
     'group',
     'invites',
+    'news'
 ]
 
 MIDDLEWARE = [

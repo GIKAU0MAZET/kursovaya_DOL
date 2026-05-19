@@ -8,12 +8,15 @@ import { childrenService } from "@/services/children.service";
 import { scheduleService } from "@/services/schedule.service";
 
 import TodayTimeline from "@/components/home/EventCard";
+import { newsService } from "@/services/news.service";
 import { Child } from "@/types/children.types";
+import { News } from "@/types/news.types";
 import { Event } from "@/types/schedule.types";
 
 export default function HomeScreen() {
   const [children, setChildren] = useState<Child[]>([]);
   const [events, setEvents] = useState<Event[]>([]);
+  const [news, setNews] = useState<News[]>([]);
 
   useEffect(() => {
     loadData();
@@ -22,12 +25,13 @@ export default function HomeScreen() {
   const loadData = async () => {
     try {
       const childrenData = await childrenService.getChildren();
-
-      const eventsData = await scheduleService.getEvents();
-
       setChildren(childrenData);
 
+      const eventsData = await scheduleService.getEvents();
       setEvents(eventsData);
+
+      const newsData = await newsService.getAllNews();
+      setNews(newsData);
     } catch (e) {
       console.log(e);
     }
@@ -39,21 +43,6 @@ export default function HomeScreen() {
     day: "numeric",
     month: "long",
   });
-
-  const news = [
-    {
-      id: 1,
-      title: "Поход в лес",
-      image:
-        "https://aif-s3.aif.ru/images/012/209/9a1015055550219cf1c8e3e8238f4253.jpg",
-    },
-    {
-      id: 2,
-      title: "Спортивная эстафета",
-      image:
-        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTbBkQr4lRgATy6TKfRsiQQz3jBSFAFszjZfQ&s",
-    },
-  ];
 
   const notifications = [
     {
@@ -109,22 +98,13 @@ export default function HomeScreen() {
 
       {/* NEWS */}
       <View style={{ gap: 12 }}>
-        <Text
-          style={{
-            fontSize: 24,
-            fontWeight: "700",
-          }}
-        >
+        <Text style={{ fontSize: 24, fontWeight: "700" }}>
           Последние новости
         </Text>
-
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={{
-            gap: 12,
-            paddingRight: 16,
-          }}
+          contentContainerStyle={{ gap: 12, paddingRight: 16 }}
         >
           {news.map((item) => (
             <View
@@ -136,23 +116,36 @@ export default function HomeScreen() {
                 overflow: "hidden",
               }}
             >
-              <Image
-                source={{ uri: item.image }}
-                style={{
-                  width: "100%",
-                  height: 150,
-                }}
-              />
-
-              <View style={{ padding: 14 }}>
-                <Text
+              {item.image ? (
+                <Image
+                  source={{ uri: item.image }}
+                  style={{ width: "100%", height: 150 }}
+                />
+              ) : (
+                <View
                   style={{
-                    fontSize: 16,
-                    fontWeight: "700",
+                    width: "100%",
+                    height: 150,
+                    backgroundColor: "#E0E0E0",
+                    justifyContent: "center",
+                    alignItems: "center",
                   }}
                 >
+                  <Text>Нет фото</Text>
+                </View>
+              )}
+              <View style={{ padding: 14 }}>
+                <Text style={{ fontSize: 16, fontWeight: "700" }}>
                   {item.title}
                 </Text>
+                {item.body ? (
+                  <Text
+                    style={{ fontSize: 14, color: "#666", marginTop: 4 }}
+                    numberOfLines={2}
+                  >
+                    {item.body}
+                  </Text>
+                ) : null}
               </View>
             </View>
           ))}

@@ -16,6 +16,11 @@ class ChildListCreateView(generics.ListCreateAPIView):
             parentinvite__email=user.email,
             parentinvite__used=True
         ).distinct()
+        
+    def get_serializer_context(self):
+        return {
+            'request': self.request
+        }
 
     def perform_create(self, serializer):
         # Здесь можно оставить создание ребёнка (если нужно)
@@ -32,3 +37,8 @@ class ChildDetailView(generics.RetrieveUpdateDestroyAPIView):
             parentinvite__email=user.email,
             parentinvite__used=True
         ).distinct()
+        
+    def get_serializer_context(self):
+        return {
+            'request': self.request
+        }

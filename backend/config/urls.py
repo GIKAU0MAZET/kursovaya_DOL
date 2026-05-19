@@ -11,6 +11,7 @@ urlpatterns = [
     path('api/schedule/', include('schedule.urls')),
     path('api/gallery/', include('gallery.urls')),
     path('api/invites/', include('invites.urls')),
+    path('api/news/', include('news.urls')),
 ]
 
 urlpatterns += static(
