@@ -5,7 +5,9 @@ import ChildProfileCard from "@/components/child/ChildProfileCard";
 import HealthCard from "@/components/child/HealthCard";
 import NutritionCard from "@/components/child/NutritionCard";
 import { childrenService } from "@/services/children.service";
+import { eventsService } from "@/services/events.service";
 import { Child } from "@/types/children.types";
+import { EventStats } from "@/types/events.types";
 import getAge from "@/utils/getAge";
 import { useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
@@ -15,6 +17,7 @@ export default function ChildScreen() {
   const { id } = useLocalSearchParams();
   const [child, setChild] = useState<Child | null>(null);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<EventStats | null>(null);
 
   useEffect(() => {
     loadChild();
@@ -23,9 +26,11 @@ export default function ChildScreen() {
   const loadChild = async () => {
     if (!id) return;
     try {
-      const data = await childrenService.getChildById(id as string);
-      console.log("Данные детей:", data);
-      setChild(data);
+      const childData = await childrenService.getChildById(id as string);
+      setChild(childData);
+
+      const statsData = await eventsService.getStats(id as string);
+      setStats(statsData);
     } catch (e) {
       console.log(e);
     } finally {
@@ -33,7 +38,7 @@ export default function ChildScreen() {
     }
   };
 
-  if (loading || !child) {
+  if (loading || !child || !stats) {
     return (
       <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
         <Text>Loading...</Text>
@@ -61,7 +66,11 @@ export default function ChildScreen() {
         >
           Успеваемость и активность
         </Text>
-        <ActivityStatsCard attended={19} total={20} activity={9} />
+        <ActivityStatsCard
+          attended={stats?.attended}
+          total={stats?.total}
+          activity={stats?.activity}
+        />
       </View>
 
       <View style={{ gap: 12, marginTop: 24 }}>
