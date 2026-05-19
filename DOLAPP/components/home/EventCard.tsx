@@ -2,6 +2,7 @@ import { useMemo } from "react";
 import { Text, View } from "react-native";
 
 import { Event } from "@/types/schedule.types";
+import { formatTime } from "@/utils/formatTime";
 
 type Props = {
   events: Event[];
@@ -82,7 +83,8 @@ export default function TodayTimeline({ events }: Props) {
                   </Text>
 
                   <Text style={{ color: "#666", marginTop: 4 }}>
-                    {event.start_time} — {event.end_time}
+                    {formatTime(event.start_time)} —{" "}
+                    {formatTime(event.end_time)}
                   </Text>
 
                   <Text style={{ color: "#999", marginTop: 2 }}>

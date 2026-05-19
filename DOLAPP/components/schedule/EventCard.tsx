@@ -1,5 +1,6 @@
 import { Text, View } from "react-native";
 
+import { formatTime } from "@/utils/formatTime";
 import { Event } from "../../types/schedule.types";
 
 type Props = {
@@ -41,7 +42,7 @@ export default function EventCard({ event }: Props) {
           fontWeight: "500",
         }}
       >
-        {event.start_time} - {event.end_time}
+        {formatTime(event.start_time)} - {formatTime(event.end_time)}
       </Text>
 
       <Text

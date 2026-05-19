@@ -9,7 +9,6 @@ export default function DayTimeline({
   isLast: boolean;
 }) {
   const color = event.color || "#22C55E";
-
   return (
     <View style={{ flexDirection: "row" }}>
       {/* LEFT TIMELINE */}
