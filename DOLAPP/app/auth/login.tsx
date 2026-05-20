@@ -61,6 +61,12 @@ export default function Login() {
           onPress={() => login("educator@mail.ru", "nQPxXR86@5f@nF8")}
           color="gray"
         />
+        <View style={{ height: 8 }} />
+        <Button
+          title="Медик"
+          onPress={() => login("medic@mail.com", "b5LX69di2@PzrTZ")}
+          color="gray"
+        />
       </View>
     </View>
   );

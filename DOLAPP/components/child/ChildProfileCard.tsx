@@ -12,6 +12,7 @@ type Props = {
 };
 
 export default function ChildProfileCard({ child }: Props) {
+  console.log("ChildProfileCard received:", child);
   return (
     <View
       style={{

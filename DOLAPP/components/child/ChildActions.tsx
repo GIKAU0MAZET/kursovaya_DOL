@@ -11,14 +11,6 @@ const actions = [
     title: "Достижения",
     icon: "trophy-outline",
   },
-  {
-    title: "Здоровье",
-    icon: "medkit-outline",
-  },
-  {
-    title: "Профиль",
-    icon: "person-outline",
-  },
 ];
 
 export default function ChildActions() {
