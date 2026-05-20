@@ -16,7 +16,7 @@ export default function AlertsScreen() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F5F5", padding: 16 }}>
       <Text style={{ fontSize: 24, fontWeight: "800", marginBottom: 16 }}>
-        🚨 Тревоги ({">"}37.5°C)
+        🚨 Тревоги
       </Text>
       {alerts.length === 0 ? (
         <Text style={{ textAlign: "center", marginTop: 50, color: "#666" }}>

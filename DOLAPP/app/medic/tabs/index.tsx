@@ -1,3 +1,4 @@
+import { childrenService } from "@/services/children.service";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
@@ -29,30 +30,17 @@ type TempRecord = {
   note?: string;
 };
 
-// Глобальный массив тревог
+// Глобальный массив тревог (для экрана Alerts)
 export const globalAlerts: { childName: string; temp: number; time: string }[] =
   [];
-
-// Мок детей (можно заменить на api.get)
-const mockChildren: Child[] = [
-  { id: 1, first_name: "Анна", last_name: "Смирнова", notes: "" },
-  {
-    id: 2,
-    first_name: "Иван",
-    last_name: "Петров",
-    notes: "Аллергия на пенициллин",
-  },
-  { id: 3, first_name: "Мария", last_name: "Козлова", notes: "" },
-  { id: 4, first_name: "Дмитрий", last_name: "Иванов", notes: "Близорукость" },
-  { id: 5, first_name: "Елена", last_name: "Соколова", notes: "" },
-];
 
 // Ключи для AsyncStorage
 const STORAGE_TEMPS = "medic_temperatures";
 const STORAGE_NOTES = "medic_notes";
+const STORAGE_PARENT_ALERTS = "parent_alerts";
 
 export default function MedicHome() {
-  const [children, setChildren] = useState<Child[]>(mockChildren);
+  const [children, setChildren] = useState<Child[]>([]);
   const [temperatures, setTemperatures] = useState<TempRecord[]>([]);
   const [refreshing, setRefreshing] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
@@ -61,22 +49,55 @@ export default function MedicHome() {
   const [tempNote, setTempNote] = useState("");
   const router = useRouter();
 
-  // Загрузка сохранённых температур и заметок
+  // Загрузка реальных детей из API + сохранённых заметок/температур
+  const loadData = async () => {
+    try {
+      // 1. Загружаем реальных детей из API
+      const childrenData = await childrenService.getChildren();
+
+      // 2. Загружаем сохранённые заметки
+      const storedNotes = await AsyncStorage.getItem(STORAGE_NOTES);
+      const notesMap = storedNotes ? JSON.parse(storedNotes) : {};
+
+      // 3. Объединяем заметки с детьми
+      const childrenWithNotes = childrenData.map((child: Child) => ({
+        ...child,
+        notes: notesMap[child.id] || "",
+      }));
+      setChildren(childrenWithNotes);
+
+      // 4. Загружаем сохранённые температуры
+      const storedTemps = await AsyncStorage.getItem(STORAGE_TEMPS);
+      if (storedTemps) setTemperatures(JSON.parse(storedTemps));
+    } catch (error) {
+      console.error("Ошибка загрузки данных:", error);
+      Alert.alert("Ошибка", "Не удалось загрузить список детей");
+    }
+  };
+
   useEffect(() => {
     loadData();
   }, []);
 
-  const loadData = async () => {
+  const saveParentAlert = async (
+    childId: number,
+    childName: string,
+    temp: number,
+  ) => {
     try {
-      const storedTemps = await AsyncStorage.getItem(STORAGE_TEMPS);
-      if (storedTemps) setTemperatures(JSON.parse(storedTemps));
-      const storedNotes = await AsyncStorage.getItem(STORAGE_NOTES);
-      if (storedNotes) {
-        const notesMap = JSON.parse(storedNotes);
-        setChildren((prev) =>
-          prev.map((c) => ({ ...c, notes: notesMap[c.id] || "" })),
-        );
-      }
+      const stored = await AsyncStorage.getItem(STORAGE_PARENT_ALERTS);
+      const alerts = stored ? JSON.parse(stored) : [];
+      alerts.unshift({
+        id: Date.now().toString(),
+        childId,
+        childName,
+        temp,
+        timestamp: new Date().toISOString(),
+        read: false,
+      });
+      // Ограничим историю 50 последними тревогами
+      if (alerts.length > 50) alerts.pop();
+      await AsyncStorage.setItem(STORAGE_PARENT_ALERTS, JSON.stringify(alerts));
     } catch (error) {
       console.error(error);
     }
@@ -93,7 +114,7 @@ export default function MedicHome() {
     await AsyncStorage.setItem(STORAGE_NOTES, JSON.stringify(notesMap));
   };
 
-  const addTemperature = () => {
+  const addTemperature = async () => {
     if (!selectedChild) return;
     const temp = parseFloat(tempValue);
     if (isNaN(temp)) {
@@ -109,7 +130,7 @@ export default function MedicHome() {
     };
     const updated = [newRecord, ...temperatures];
     setTemperatures(updated);
-    saveTemperatures(updated);
+    await saveTemperatures(updated);
 
     // Проверка на высокую температуру
     if (temp > 37.5) {
@@ -119,9 +140,15 @@ export default function MedicHome() {
       );
       globalAlerts.unshift({
         childName: `${selectedChild.first_name} ${selectedChild.last_name}`,
-        temp: temp,
+        temp,
         time: new Date().toLocaleString(),
       });
+      // Отправляем уведомление родителю
+      await saveParentAlert(
+        selectedChild.id,
+        `${selectedChild.first_name} ${selectedChild.last_name}`,
+        temp,
+      );
     }
 
     setModalVisible(false);
@@ -157,7 +184,7 @@ export default function MedicHome() {
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: "#F5F5F5" }}>
       <Text style={{ fontSize: 24, fontWeight: "800", padding: 16 }}>
-        Медицинский пост (ручной ввод)
+        Медицинский пост
       </Text>
 
       <FlatList
@@ -166,6 +193,11 @@ export default function MedicHome() {
         contentContainerStyle={{ padding: 16 }}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        ListEmptyComponent={
+          <Text style={{ textAlign: "center", marginTop: 40, color: "#666" }}>
+            Нет детей. Проверьте подключение к серверу.
+          </Text>
         }
         renderItem={({ item }) => (
           <View
