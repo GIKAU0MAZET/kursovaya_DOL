@@ -30,6 +30,8 @@ class ChildDetailView(generics.RetrieveAPIView):
             return Child.objects.filter(group__educators__id=user.id)
         if user.role == "parent":
             return Child.objects.filter(parents=user)
+        if user.role == "medic":
+            return Child.objects.all()
         return Child.objects.none()
     
 class MyGroupView(generics.ListAPIView):
