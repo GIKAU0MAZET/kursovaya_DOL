@@ -13,6 +13,7 @@ urlpatterns = [
     path('api/invites/', include('invites.urls')),
     path('api/news/', include('news.urls')),
     path('api/health/', include('health.urls')),
+    path("api/group/", include("group.urls")),
 ]
 
 urlpatterns += static(
