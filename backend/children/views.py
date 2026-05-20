@@ -20,23 +20,16 @@ class ChildListCreateView(generics.ListCreateAPIView):
         serializer.save()
 
 
-class ChildListView(generics.ListAPIView):
+class ChildDetailView(generics.RetrieveAPIView):
     serializer_class = ChildSerializer
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
-        print("USER:", self.request.user)
-        print("ROLE:", self.request.user.role)
-        print("ID:", self.request.user.id)
-        
         user = self.request.user
-
         if user.role == "educator":
             return Child.objects.filter(group__educators__id=user.id)
-
         if user.role == "parent":
             return Child.objects.filter(parents=user)
-
         return Child.objects.none()
     
 class MyGroupView(generics.ListAPIView):
