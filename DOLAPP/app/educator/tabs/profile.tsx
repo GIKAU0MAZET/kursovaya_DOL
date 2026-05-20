@@ -1,5 +1,6 @@
 import { COLORS } from "@/constants/theme";
 import { Ionicons } from "@expo/vector-icons";
+import { router } from "expo-router";
 import { Image, Pressable, ScrollView, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useAuthStore } from "../../../store/auth.store";
@@ -9,7 +10,7 @@ export default function Profile() {
   const user = useAuthStore((s) => s.user);
 
   const menuItems = [
-    { title: "Мой отряд", icon: "people-outline" },
+    { title: "Мой отряд", icon: "people-outline", route: "/group/my-group" },
     { title: "Уведомления", icon: "notifications-outline" },
     { title: "Поддержка", icon: "help-circle-outline" },
     { title: "О приложении", icon: "information-circle-outline" },
@@ -77,6 +78,7 @@ export default function Profile() {
           {menuItems.map((item, index) => (
             <Pressable
               key={item.title}
+              onPress={() => item.route && router.push(item.route as any)}
               style={{
                 flexDirection: "row",
                 alignItems: "center",

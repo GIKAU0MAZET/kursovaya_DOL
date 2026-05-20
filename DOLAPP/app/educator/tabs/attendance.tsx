@@ -8,6 +8,7 @@ import {
   Text,
   View,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 type Event = {
   id: number;
@@ -91,6 +92,35 @@ export default function AttendanceScreen() {
     }
   };
 
+  const markAllPresent = async () => {
+    if (!selectedEvent) return;
+
+    try {
+      setSaving(true);
+
+      const promises = attendance.map((item) =>
+        scheduleService.updateAttendance(
+          selectedEvent.id,
+          item.child_id,
+          "attended",
+        ),
+      );
+
+      await Promise.all(promises);
+
+      setAttendance((prev) =>
+        prev.map((item) => ({
+          ...item,
+          status: "attended",
+        })),
+      );
+    } catch (e) {
+      console.log("bulk update error", e);
+    } finally {
+      setSaving(false);
+    }
+  };
+
   // ⏳ loading
   if (loading) {
     return (
@@ -103,23 +133,38 @@ export default function AttendanceScreen() {
   // 📅 EVENTS LIST
   if (!selectedEvent) {
     return (
-      <FlatList
-        data={events}
-        keyExtractor={(item) => item.id.toString()}
-        contentContainerStyle={{ padding: 16 }}
-        renderItem={({ item }) => (
-          <Pressable style={styles.eventCard} onPress={() => openEvent(item)}>
-            <Text style={styles.eventTitle}>{item.title}</Text>
-            <Text style={styles.eventDate}>{item.date}</Text>
-          </Pressable>
-        )}
-      />
+      <SafeAreaView>
+        {/* HEADER */}
+        <View
+          style={{
+            paddingTop: 10,
+            paddingBottom: 12,
+            paddingHorizontal: 16,
+            flexDirection: "row",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <Text style={{ fontSize: 22, fontWeight: "800" }}>Расписание</Text>
+        </View>
+        <FlatList
+          data={events}
+          keyExtractor={(item) => item.id.toString()}
+          contentContainerStyle={{ padding: 16 }}
+          renderItem={({ item }) => (
+            <Pressable style={styles.eventCard} onPress={() => openEvent(item)}>
+              <Text style={styles.eventTitle}>{item.title}</Text>
+              <Text style={styles.eventDate}>{item.date}</Text>
+            </Pressable>
+          )}
+        />
+      </SafeAreaView>
     );
   }
 
   // 👶 ATTENDANCE LIST
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }}>
       {/* back */}
       <Pressable
         style={styles.back}
@@ -132,6 +177,10 @@ export default function AttendanceScreen() {
       </Pressable>
 
       <Text style={styles.header}>{selectedEvent.title}</Text>
+
+      <Pressable onPress={markAllPresent}>
+        <Text style={{ color: "#fff" }}>Отметить всех отсутствующими</Text>
+      </Pressable>
 
       {saving && <Text style={styles.saving}>Сохранение...</Text>}
 
@@ -160,7 +209,7 @@ export default function AttendanceScreen() {
           </Pressable>
         )}
       />
-    </View>
+    </SafeAreaView>
   );
 }
 
