@@ -11,7 +11,9 @@ export type Child = {
 
   group_name: string;
 
-  parent: number;
+  parents: number[];
 
   created_at: string;
+
+  photo?: string | null;
 };

@@ -3,15 +3,14 @@ from django.db import models
 
 
 class User(AbstractUser):
-    ROLE_CHOICES = (
-        ('parent', 'Parent'),
-        ('educator', 'Educator'),
-        ('medic', 'Medic'),
-        ('admin', 'Admin'),
-    )
+    class Role(models.TextChoices):
+        Parent = 'parent', 'Parent'
+        Educator = 'educator', 'Educator'
+        Medic = 'medic', 'Medic'
+        Admin = 'admin', 'Admin'
 
     email = models.EmailField(unique=True)
-    role = models.CharField(max_length=20, choices=ROLE_CHOICES)
+    role = models.CharField(max_length=20, choices=Role.choices, default=Role.Parent)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = ['username']

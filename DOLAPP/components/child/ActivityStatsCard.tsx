@@ -11,7 +11,31 @@ export default function ActivityStatsCard({
   total,
   activity,
 }: Props) {
-  const percent = Math.round((attended / total) * 100);
+  const percent = total > 0 ? Math.round((attended / total) * 100) : 0;
+
+  const getActivityText = () => {
+    if (percent >= 70) {
+      return "Высокая активность";
+    }
+
+    if (percent >= 30) {
+      return "Средняя активность";
+    }
+
+    return "Низкая активность";
+  };
+
+  const getActivityColor = () => {
+    if (percent >= 70) {
+      return "#22C55E"; // green
+    }
+
+    if (percent >= 30) {
+      return "#F59E0B"; // orange
+    }
+
+    return "#EF4444"; // red
+  };
 
   return (
     <View
@@ -55,7 +79,7 @@ export default function ActivityStatsCard({
               marginTop: 6,
             }}
           >
-            Мероприятий
+            Посещено мероприятий
           </Text>
 
           {/* PROGRESS */}
@@ -73,10 +97,19 @@ export default function ActivityStatsCard({
               style={{
                 width: `${percent}%`,
                 height: "100%",
-                backgroundColor: "#22C55E",
+                backgroundColor: getActivityColor(),
               }}
             />
           </View>
+
+          <Text
+            style={{
+              marginTop: 10,
+              color: "#999",
+            }}
+          >
+            {percent}%
+          </Text>
         </View>
 
         {/* DIVIDER */}
@@ -100,7 +133,7 @@ export default function ActivityStatsCard({
             style={{
               fontSize: 40,
               fontWeight: "700",
-              color: "#22C55E",
+              color: getActivityColor(),
             }}
           >
             {activity}
@@ -122,7 +155,7 @@ export default function ActivityStatsCard({
               textAlign: "center",
             }}
           >
-            Участвует во всех активностях
+            {getActivityText()}
           </Text>
         </View>
       </View>

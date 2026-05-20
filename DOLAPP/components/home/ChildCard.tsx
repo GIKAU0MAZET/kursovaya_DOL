@@ -9,7 +9,7 @@ type Props = {
     first_name: string;
     last_name: string;
     group_name: string;
-    photo?: string;
+    photo?: string | null;
     status?: string;
   };
 };
@@ -40,16 +40,41 @@ export default function ChildHeroCard({ child }: Props) {
           gap: SPACING.md,
         }}
       >
-        <Image
-          source={{
-            uri: "https://i.pravatar.cc/150",
-          }}
-          style={{
-            width: 80,
-            height: 80,
-            borderRadius: 40,
-          }}
-        />
+        {child.photo ? (
+          <Image
+            source={{
+              uri: child.photo,
+            }}
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 40,
+            }}
+          />
+        ) : (
+          <View
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 40,
+
+              backgroundColor: "rgba(255,255,255,0.25)",
+
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text
+              style={{
+                color: "white",
+                fontSize: 28,
+                fontWeight: "700",
+              }}
+            >
+              {child.first_name?.[0]}
+            </Text>
+          </View>
+        )}
 
         <View
           style={{

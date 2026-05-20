@@ -1,19 +1,54 @@
-import { ScrollView, Text, View } from "react-native";
-
 import ActivityStatsCard from "@/components/child/ActivityStatsCard";
 import ChildActions from "@/components/child/ChildActions";
 import ChildHeader from "@/components/child/ChildHeader";
 import ChildProfileCard from "@/components/child/ChildProfileCard";
 import HealthCard from "@/components/child/HealthCard";
 import NutritionCard from "@/components/child/NutritionCard";
+import { childrenService } from "@/services/children.service";
+import { eventsService } from "@/services/events.service";
+import { Child } from "@/types/children.types";
+import { EventStats } from "@/types/events.types";
+import getAge from "@/utils/getAge";
+import { useLocalSearchParams } from "expo-router";
+import { useEffect, useState } from "react";
+import { ScrollView, Text, View } from "react-native";
 
 export default function ChildScreen() {
-  const child = {
-    first_name: "Максим",
-    last_name: "Иванов",
-    group_name: "Отряд №1",
-    age: 12,
-    birth_date: "14 мая 2013",
+  const { id } = useLocalSearchParams();
+  const [child, setChild] = useState<Child | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState<EventStats | null>(null);
+
+  useEffect(() => {
+    loadChild();
+  }, [id]); // добавил id в зависимости
+
+  const loadChild = async () => {
+    if (!id) return;
+    try {
+      const childData = await childrenService.getChildById(id as string);
+      setChild(childData);
+
+      const statsData = await eventsService.getStats(id as string);
+      setStats(statsData);
+    } catch (e) {
+      console.log(e);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading || !child || !stats) {
+    return (
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <Text>Loading...</Text>
+      </View>
+    );
+  }
+
+  const formattedChild = {
+    ...child,
+    age: getAge(child.birth_date),
   };
 
   return (
@@ -21,31 +56,29 @@ export default function ChildScreen() {
       style={{ flex: 1, backgroundColor: "#F5F5F5" }}
       contentContainerStyle={{ paddingBottom: 40 }}
     >
-      <ChildHeader name={`${child.first_name}`} />
-
-      <ChildProfileCard child={child} />
-
+      <ChildHeader name={child.first_name} />
+      <ChildProfileCard child={formattedChild} />
       <ChildActions />
 
-      {/* УСПЕВАЕМОСТЬ */}
       <View style={{ gap: 12, marginTop: 24 }}>
         <Text
           style={{ fontSize: 24, fontWeight: "700", paddingHorizontal: 16 }}
         >
           Успеваемость и активность
         </Text>
-
-        <ActivityStatsCard attended={19} total={20} activity={9} />
+        <ActivityStatsCard
+          attended={stats?.attended}
+          total={stats?.total}
+          activity={stats?.activity}
+        />
       </View>
 
-      {/* ЗДОРОВЬЕ */}
       <View style={{ gap: 12, marginTop: 24 }}>
         <Text
           style={{ fontSize: 24, fontWeight: "700", paddingHorizontal: 16 }}
         >
           Здоровье
         </Text>
-
         <HealthCard
           temperature={36.6}
           condition="Хорошее самочувствие"
@@ -53,14 +86,12 @@ export default function ChildScreen() {
         />
       </View>
 
-      {/* ПИТАНИЕ */}
       <View style={{ gap: 12, marginTop: 24 }}>
         <Text
           style={{ fontSize: 24, fontWeight: "700", paddingHorizontal: 16 }}
         >
           Питание
         </Text>
-
         <NutritionCard />
       </View>
     </ScrollView>

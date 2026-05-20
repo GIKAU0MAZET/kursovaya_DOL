@@ -7,10 +7,12 @@ type Props = {
     group_name: string;
     age?: number;
     birth_date?: string;
+    photo?: string | null;
   };
 };
 
 export default function ChildProfileCard({ child }: Props) {
+  console.log("ChildProfileCard received:", child);
   return (
     <View
       style={{
@@ -20,23 +22,40 @@ export default function ChildProfileCard({ child }: Props) {
         padding: 20,
       }}
     >
+      {/* Один горизонтальный контейнер */}
       <View style={{ flexDirection: "row", gap: 16 }}>
-        <Image
-          source={{ uri: "https://i.pravatar.cc/150" }}
-          style={{ width: 90, height: 90, borderRadius: 999 }}
-        />
+        {/* Аватар */}
+        {child.photo ? (
+          <Image
+            source={{ uri: child.photo }}
+            style={{ width: 80, height: 80, borderRadius: 40 }}
+          />
+        ) : (
+          <View
+            style={{
+              width: 80,
+              height: 80,
+              borderRadius: 40,
+              backgroundColor: "rgba(255,255,255,0.25)",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            <Text style={{ color: "white", fontSize: 28, fontWeight: "700" }}>
+              {child.first_name?.[0]}
+            </Text>
+          </View>
+        )}
 
+        {/* Текстовая часть */}
         <View style={{ justifyContent: "center", gap: 6 }}>
           <Text style={{ color: "white", fontSize: 22, fontWeight: "700" }}>
             {child.first_name} {child.last_name}
           </Text>
-
           <Text style={{ color: "rgba(255,255,255,0.9)" }}>
             {child.group_name}
           </Text>
-
           <Text style={{ color: "white" }}>{child.age} лет</Text>
-
           <Text style={{ color: "rgba(255,255,255,0.9)" }}>
             {child.birth_date}
           </Text>

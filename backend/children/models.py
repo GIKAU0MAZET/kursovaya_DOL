@@ -4,39 +4,54 @@ from group.models import Group
 
 
 class Child(models.Model):
-    GENDER_CHOICES = (
-        ('муж', 'Муж'),
-        ('жен', 'Жен'),
-    )
-
-    parent = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='children'
-    )
-
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
 
     birth_date = models.DateField()
 
+    class Gender(models.TextChoices):
+        MALE = 'male', 'Муж'
+        FEMALE = 'female', 'Жен'
+
     gender = models.CharField(
         max_length=10,
-        choices=GENDER_CHOICES
+        choices=Gender.choices
     )
 
-    group = models.ForeignKey(
-        Group,
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
-        related_name='children'
-    )
+    group = models.ForeignKey(Group, on_delete=models.SET_NULL, null=True, blank=True)
 
     allergies = models.TextField(blank=True)
     medical_notes = models.TextField(blank=True)
 
+    parents = models.ManyToManyField(
+        'users.User',
+        through='ChildParentRelation',
+        related_name='children'
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    
+    photo = models.ImageField(
+        upload_to='children/',
+        null=True,
+        blank=True
+    )
+    
+class ChildParentRelation(models.Model):
+    child = models.ForeignKey(Child, on_delete=models.CASCADE)
+    parent = models.ForeignKey('users.User', on_delete=models.CASCADE)
+
+    relation_type = models.CharField(
+        max_length=20,
+        choices=(
+            ('mother', 'Mother'),
+            ('father', 'Father'),
+            ('guardian', 'Guardian'),
+        )
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
 
-    def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+    class Meta:
+        unique_together = ('child', 'parent')
+        

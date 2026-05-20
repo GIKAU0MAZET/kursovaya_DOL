@@ -13,7 +13,7 @@ from .serializers import (
     GalleryImageSerializer
 )
 
-
+from group.models import Group
 class GalleryListCreateView(generics.ListCreateAPIView):
     serializer_class = GalleryImageSerializer
     permission_classes = [IsAuthenticated]
@@ -22,31 +22,30 @@ class GalleryListCreateView(generics.ListCreateAPIView):
     def get_queryset(self):
         user = self.request.user
 
-        # BASE QUERYSET (доступ)
         if user.role == 'admin':
             qs = GalleryImage.objects.all()
-
         elif user.role == 'parent':
-            qs = GalleryImage.objects.filter(
-                group__children__parent=user
-            ).distinct()
-
+            parent_groups = Group.objects.filter(child__parents=user)
+            qs = GalleryImage.objects.filter(group__in=parent_groups).distinct()
+        elif user.role == 'educator':
+            qs = GalleryImage.objects.filter(group__educators=user)
         else:
             return GalleryImage.objects.none()
 
-        # 🔥 FILTER BY TYPE
         photo_type = self.request.query_params.get("type")
-
-        if photo_type == "events":
-            qs = qs.filter(type="event")
-
-        elif photo_type == "squad":
-            qs = qs.filter(type="squad")
-
-        elif photo_type == "personal":
-            qs = qs.filter(type="personal")
-
-        return qs
+        if photo_type in ("event", "squad", "personal"):
+            qs = qs.filter(type=photo_type)
+        return qs.order_by("-event_date", "-id")
 
     def perform_create(self, serializer):
-        serializer.save(uploaded_by=self.request.user)
+        user = self.request.user
+
+        group = Group.objects.filter(educators=user).first()
+
+        print("USER:", user)
+        print("GROUP:", group)
+
+        serializer.save(
+            uploaded_by=user,
+            group=group
+        )

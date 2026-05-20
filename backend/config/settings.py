@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'gallery',
     'schedule',
     'group',
+    'invites',
+    'news',
 ]
 
 MIDDLEWARE = [
@@ -149,3 +151,19 @@ import os
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
+import logging
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'DEBUG',  # Уровень DEBUG поймает всё
+    },
+}
