@@ -40,16 +40,6 @@ export default function EducatorTabsLayout() {
       />
 
       <Tabs.Screen
-        name="schedule"
-        options={{
-          title: "Расписание",
-          tabBarIcon: ({ color, size }) => (
-            <FontAwesome5 name="calendar" size={size} color={color} />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
         name="profile"
         options={{
           title: "Профиль",

@@ -42,7 +42,6 @@ export const useAuthStore = create<AuthState>((set) => ({
 
     const me = await authService.me();
 
-    console.log("ME:", me);
     set({
       accessToken: res.access,
       refreshToken: res.refresh,

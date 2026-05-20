@@ -21,7 +21,6 @@ export default function PhotosScreen() {
       setLoading(true);
 
       const data = await galleryService.getPhoto();
-      console.log(await galleryService.getPhoto()); // ok, но лучше rename
       setPhotos(data);
     } catch (e) {
       console.log("LOAD ERROR:", e);
